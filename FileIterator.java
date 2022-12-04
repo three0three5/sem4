@@ -3,12 +3,21 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 public class FileIterator implements Iterator, AutoCloseable {
-    private BufferedReader reader;
+    private final BufferedReader reader;
+    private final FileReader fr;
     private String currentString;
-    public FileIterator(String fileName) throws IOException {
-        FileReader fileReader = new FileReader(fileName);
-        reader = new BufferedReader(fileReader);
-        currentString = reader.readLine();
+    public FileIterator(String fileName) {
+        try {
+            fr = new FileReader(fileName);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+        reader = new BufferedReader(fr);
+        try {
+            currentString = reader.readLine();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
     @Override
     public boolean hasNext() {
@@ -32,5 +41,6 @@ public class FileIterator implements Iterator, AutoCloseable {
     @Override
     public void close() throws Exception {
         reader.close();
+        fr.close();
     }
 }
